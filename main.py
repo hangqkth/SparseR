@@ -20,7 +20,7 @@ def main(dataset):
         block_wise_classification(train_block_set, test_block_set, eps=4.8)
 
     elif dataset == "wine":
-        csv_reader = csv.reader(open("wine.csv"))
+        csv_reader = csv.reader(open("./wine.csv"))
         data_list = [line for line in csv_reader]
         attr_list, data_list = data_list[0], data_list[1:]
         data_with_classes = [[], [], []]
