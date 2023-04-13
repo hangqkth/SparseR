@@ -10,10 +10,10 @@ def get_sparse_representation(A_con, c, bounds, test_sample, eps, iteration):
     res = linprog(c=c, A_ub=A_con, b_ub=y_con, bounds=bounds, method='highs')
     sparse_x = res.x
     #  print(res.status)
-    # if res.status == 0 and iteration == 0:
-    #     plt.plot(sparse_x)
-    #     plt.show()
-    #     plt.title("example of sparse representation")
+    if res.status == 0 and iteration == 0:
+        plt.plot(sparse_x)
+        plt.show()
+        plt.title("example of sparse representation")
     return sparse_x
 
 
@@ -58,7 +58,7 @@ def classification(train_set, test_set, eps):
             if sparse_x is not None:
                 decision = src_decision(A, train_sample_per_class, list(sparse_x), class_num, test_set[role][i, :])
             else:
-                decision = 0
+                decision = choice([0, 1, 2])
             p += 1 if decision == role else 0
             count += 1
     acc = p / count

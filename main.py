@@ -15,9 +15,9 @@ def main(dataset):
         block_array = np.concatenate([block_array[:2, ], np.expand_dims(block_array[3, :, :, :], axis=0)], axis=0)
         print(data_array.shape, block_array.shape)
         train_set = data_array[:, :15, :]
-        test_set = data_array[:, 15:, :]
-        train_block_set = block_array[:, :15, :, :]
-        test_block_set = [block_array[i, 15:, :, :] for i in range(block_array.shape[0])]
+        test_set = data_array[:, :, :]
+        train_block_set = block_array[:, :, :, :]
+        test_block_set = [block_array[i, :, 15:, :] for i in range(block_array.shape[0])]
         # classification(train_set, test_set, eps=4.8)
         block_wise_classification(train_block_set, test_block_set, eps=4.8)
 
@@ -35,9 +35,8 @@ def main(dataset):
         train_set = np.stack([matrix[:train_sample_per_class] for matrix in data_with_classes], axis=0)
         test_set = [matrix[train_sample_per_class:] for matrix in data_with_classes]
         classification(train_set, test_set, eps=1.3)
-
     else:
         print("Invalid dataset, input 'image' or 'wine'.")
 
-print("hello")
-main("image")  # input "image" for "wine"
+
+main("wine")  # input "image" for "wine"
