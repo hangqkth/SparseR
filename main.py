@@ -1,6 +1,8 @@
 import numpy as np
-from utils.functionality import classification, block_wise_classification
+from utils.functionality import classification, block_wise_classification, visualize_wine_feature
 import csv
+import random
+import matplotlib.pyplot as plt
 
 
 def main(dataset):
@@ -28,9 +30,8 @@ def main(dataset):
             data_list[i] = [float(element) for element in data_list[i]]
             data_with_classes[int(data_list[i][0])-1].append(data_list[i][1:])
         data_with_classes = [np.array(lst) for lst in data_with_classes]
-        # for ls in data_with_classes:  # check number of different class: 59, 71, 48 respectively
-        #     print(ls.shape)
-        train_sample_per_class = 35
+        visualize_wine_feature(data_with_classes, 0, 11)
+        train_sample_per_class = 35  # total number per class: 59, 71, 48
         train_set = np.stack([matrix[:train_sample_per_class] for matrix in data_with_classes], axis=0)
         test_set = [matrix[train_sample_per_class:] for matrix in data_with_classes]
         classification(train_set, test_set, eps=1.3)
@@ -39,4 +40,4 @@ def main(dataset):
         print("Invalid dataset, input 'image' or 'wine'.")
 
 
-main("wine")  # input "image" for "wine"
+main("image")  # input "image" for "wine"

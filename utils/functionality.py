@@ -10,11 +10,11 @@ def get_sparse_representation(A_con, c, bounds, test_sample, eps, iteration):
     res = linprog(c=c, A_ub=A_con, b_ub=y_con, bounds=bounds, method='highs')
     sparse_x = res.x
     #  print(res.status)
-    if res.status == 0 and iteration == 0:
-        plt.plot(sparse_x)
-        plt.show()
-        plt.title("example of sparse representation")
-    return sparse_x # hahaha
+    # if res.status == 0 and iteration == 0:
+    #     plt.plot(sparse_x)
+    #     plt.show()
+    #     plt.title("example of sparse representation")
+    return sparse_x
 
 
 def src_decision(A, sample_per_class, sparse_x, class_num, test_sample):
@@ -91,12 +91,22 @@ def block_wise_classification(train_set, test_set, eps):
                     decisions.append(src_decision(A, train_sample_per_class, list(sparse_x), class_num, test_set[role][i, block, :]))
                 else:
                     decisions.append(0)
-            print(decisions, vote(decisions))
+            # print(decisions, vote(decisions))
             decision = choice(vote(decisions))
+            print("True class: "+str(role), "Predicted class: "+str(decision))
             p += 1 if decision == role else 0
             count += 1
     acc = p / count
     print("accuracy = "+str(acc*100)+"%")
+
+
+def visualize_wine_feature(data_with_classes, axis1, axis2):
+    colors = ['g', 'b', 'r']
+    for ls in range(len(data_with_classes)):  # check number of different class: 59, 71, 48 respectively
+        reduced_feature = [data_with_classes[ls][:, axis1], data_with_classes[ls][:, axis2]]  # dimension to be visualized
+        for p in range(reduced_feature[0].shape[0]):
+            plt.scatter(reduced_feature[0][p], reduced_feature[1][p], c=colors[ls])
+    plt.show()
 
 
 if __name__ == "__main__":
