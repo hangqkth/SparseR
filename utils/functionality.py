@@ -9,7 +9,6 @@ def get_sparse_representation(A_con, c, bounds, test_sample, eps, iteration):
     y_con = np.concatenate((test_sample+eps, -test_sample+eps), axis=0)  # set constrain, max noise term energy = eps
     res = linprog(c=c, A_ub=A_con, b_ub=y_con, bounds=bounds, method='highs')
     sparse_x = res.x
-    #  print(res.status)
     if res.status == 0 and iteration == 0:
         plt.plot(sparse_x)
         plt.show()

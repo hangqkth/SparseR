@@ -33,7 +33,6 @@ def load_data_into_npy(data_source):
             blocks = np.array(blocks).astype(np.float64)
             one_class_block.append(blocks)
             img = cv2.pyrDown(cv2.pyrDown(cv2.pyrDown(cv2.pyrDown(cv2.pyrDown(img)))))  # down sampling to proper size (35, 44, 3)
-            show_img(img)
             img = img.astype(np.float64)
             one_class_img.append(img.ravel()/np.linalg.norm(img.ravel(), 2))  # flatten into vector and L2 normalization
             # one_class_img.append(img.ravel())

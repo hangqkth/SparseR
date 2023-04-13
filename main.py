@@ -8,18 +8,18 @@ import matplotlib.pyplot as plt
 def main(dataset):
     """main classification function"""
     if dataset == "image":
-        data_array = np.load('matrix_data/data_array.npy') * 100
-        block_array = np.load('matrix_data/block_array.npy') * 100
+        data_array = np.load('matrix_data/data_array.npy')
+        block_array = np.load('matrix_data/block_array.npy')
         #  reduce to 3 classes: Darth Vader, Green Goblin, Thanos
         data_array = np.concatenate([data_array[:2, ], np.expand_dims(data_array[3, :, :], axis=0)], axis=0)
         block_array = np.concatenate([block_array[:2, ], np.expand_dims(block_array[3, :, :, :], axis=0)], axis=0)
         print(data_array.shape, block_array.shape)
         train_set = data_array[:, :15, :]
-        test_set = data_array[:, :, :]
-        train_block_set = block_array[:, :, :, :]
-        test_block_set = [block_array[i, :, 15:, :] for i in range(block_array.shape[0])]
-        # classification(train_set, test_set, eps=4.8)
-        block_wise_classification(train_block_set, test_block_set, eps=4.8)
+        test_set = data_array[:, 15:, :]
+        train_block_set = block_array[:, :15, :, :]
+        test_block_set = [block_array[i, 15:, :, :] for i in range(block_array.shape[0])]
+        classification(train_set, test_set, eps=0.05)
+        # block_wise_classification(train_block_set, test_block_set, eps=0.048)
 
     elif dataset == "wine":
         csv_reader = csv.reader(open("./wine.csv"))
