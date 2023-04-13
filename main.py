@@ -39,5 +39,5 @@ def main(dataset):
     else:
         print("Invalid dataset, input 'image' or 'wine'.")
 
-
+print("hello")
 main("image")  # input "image" for "wine"
