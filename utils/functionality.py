@@ -6,6 +6,9 @@ from scipy.optimize import linprog
 
 
 def get_sparse_representation(A_con, c, bounds, test_sample, eps, iteration):
+    """ Solve the optimization problem to obtain sparse representation:
+        minimize ||x||1
+        subject to ||Ax-b||2<=eps """
     y_con = np.concatenate((test_sample+eps, -test_sample+eps), axis=0)  # set constrain, max noise term energy = eps
     res = linprog(c=c, A_ub=A_con, b_ub=y_con, bounds=bounds, method='highs')
     sparse_x = res.x
@@ -17,6 +20,7 @@ def get_sparse_representation(A_con, c, bounds, test_sample, eps, iteration):
 
 
 def src_decision(A, sample_per_class, sparse_x, class_num, test_sample):
+    """Residuals of class c: r_c(y)=||y-A*sigma(x)||2"""
     pred_error = []
     for c in range(class_num):
         coeff = sparse_x[c*sample_per_class:sample_per_class*(c+1)]
@@ -44,9 +48,10 @@ def classification(train_set, test_set, eps):
     A = [train_set[c, ] for c in range(class_num)]
     A = np.concatenate(A, axis=0).transpose((1, 0))
 
-    # Define the objective function and constraints for the linear program: y = Ax + z, ||z||_2 < eps
+    # Define the objective function and constraints for the linear program: argmin x, subject to ||Ax-y||2 <= eps
+    # To use linprog function, transfer the constraint to Ax - b <= eps and -Ax + b <= eps
     A_con = np.concatenate((A, -A), axis=0)
-    c = np.ones(A.shape[1])
+    c = np.ones(A.shape[1])  # L1 norm
     bounds = [(0, None) for i in range(A.shape[1])]
 
     print("start classification")
@@ -57,7 +62,7 @@ def classification(train_set, test_set, eps):
             if sparse_x is not None:
                 decision = src_decision(A, train_sample_per_class, list(sparse_x), class_num, test_set[role][i, :])
             else:
-                decision = choice([0, 1, 2])
+                decision = choice(list(range(class_num)))
             p += 1 if decision == role else 0
             count += 1
     acc = p / count
@@ -69,11 +74,10 @@ def block_wise_classification(train_set, test_set, eps):
     train_set = np.concatenate(train_blocks, axis=1)
     class_num, train_sample_per_class = train_set.shape[0], train_set.shape[1]
     p, count = 0, 0
-    #
-    A = [train_set[c,] for c in range(class_num)]
+
+    A = [train_set[c, ] for c in range(class_num)]
     # A = [m/np.sqrt(np.sum(m**2)) for m in A]
     A = np.concatenate(A, axis=0).transpose((1, 0))
-    #
     # # Define the objective function and constraints for the linear program: y = Ax + z, ||z||_2 < eps
     A_con = np.concatenate((A, -A), axis=0)
     c = np.ones(A.shape[1])
@@ -109,8 +113,8 @@ def visualize_wine_feature(data_with_classes, axis1, axis2):
 
 
 if __name__ == "__main__":
-    data_array = np.load('../matrix_data/data_array.npy') * 100
-    block_array = np.load('../matrix_data/block_array.npy') * 100
+    data_array = np.load('../matrix_data/data_array.npy')
+    block_array = np.load('../matrix_data/block_array.npy')
     #  reduce to 3 classes: Darth Vader, Green Goblin, Thanos
     data_array = np.concatenate([data_array[:2, ], np.expand_dims(data_array[3, :, :], axis=0)], axis=0)
     block_array = np.concatenate([block_array[:2, ], np.expand_dims(block_array[3, :, :, :], axis=0)], axis=0)
@@ -119,5 +123,5 @@ if __name__ == "__main__":
     test_set = data_array[:, 15:, :]
     train_block_set = block_array[:, :15, :, :]
     test_block_set = block_array[:, 15:, :, :]
-    # classification(train_set, test_set)
-    # block_wise_classification(train_block_set, test_block_set)
+    classification(train_set, test_set, eps=0.048)
+    # block_wise_classification(train_block_set, test_block_set, eps=0.048)
