@@ -4,7 +4,7 @@ from scipy.optimize import linprog
 import scipy.sparse as sparse
 import scipy.stats as stats
 
-# 生成矩阵A
+# 生成矩阵A,行满秩
 A = np.zeros((50, 100))
 for i in range(50):
     for j in range(50):
