@@ -5,7 +5,7 @@ import scipy.sparse as sparse
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 
-# 生成矩阵A,行满秩
+
 # generate matrix A with full row rank
 measurement_num = 70
 A = np.zeros((measurement_num, 100))
@@ -42,7 +42,7 @@ def simulate_cvxpy(sparsity, A):
     x_hat = [float(i) for i in x_hat]
 
     plt.plot(X[:, 0])
-    plt.plot(x_hat)
+    plt.plot(X_hat.value)
     plt.ylabel("value of element in x or x_hat")
     plt.xlabel("sparse vector x and x_hat")
     plt.legend(["x", "x_hat"])
@@ -87,7 +87,7 @@ def do_plot(s_min, s_max, A):
     # plt.show()
 
 
-e1 = simulate_cvxpy(sparsity=0.3, A=A)
+e1 = simulate_cvxpy(sparsity=0.5, A=A)
 # e2, x2 = simulate_linprog(sparsity=0.05, A=A)
 
 
