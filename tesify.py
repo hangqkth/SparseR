@@ -7,13 +7,12 @@ import matplotlib.pyplot as plt
 
 
 # Basic setup
-measure_num = 20
+measure_num = 50
 feature_num = 100
-sparsity = 0.05
+density = 0.05
 eps = 0.1
 rvs = stats.norm(loc=0, scale=1).rvs  # standard Gaussian
 # rvs = stats.laplace().rvs  # Laplace
-
 
 A = np.zeros((measure_num, feature_num))
 for i in range(measure_num):
@@ -22,10 +21,10 @@ for i in range(measure_num):
     np.random.shuffle(A[i])
 
 
-def simulate_cvxpy(sparsity, A, eps=eps):
+def simulate_cvxpy(density, A, eps=eps):
     """Using Disciplined convex programming (DCP) to solve min or max problem"""
     # generate X from sparse function, and generate Y = A @ X
-    S = sparse.random(feature_num, 1, density=sparsity, data_rvs=rvs)
+    S = sparse.random(feature_num, 1, density=density, data_rvs=rvs)
     X = S.toarray()
     Y = np.matmul(A, X)
 
@@ -58,7 +57,7 @@ def simulate_cvxpy(sparsity, A, eps=eps):
     plt.ylabel("value of element in x or x_hat")
     plt.xlabel("sparse vector x and x_hat")
     plt.legend(["x", "x_hat"])
-    plt.title("A@X_hat=Y, eps="+str(eps)+", sparsity="+str(sparsity)+", measurement="+str(measure_num))
+    plt.title("A@X_hat=Y, eps="+str(eps)+", density="+str(density)+", measurement="+str(measure_num))
     plt.show()
 
     plt.plot(X[:, 0])
@@ -66,7 +65,7 @@ def simulate_cvxpy(sparsity, A, eps=eps):
     plt.ylabel("value of element in x or x_hat")
     plt.xlabel("sparse vector x and x_hat")
     plt.legend(["x", "x_hat"])
-    plt.title("||A@X_hat-Y||2<=eps, eps="+str(eps)+", sparsity="+str(sparsity)+", measurement="+str(measure_num))
+    plt.title("||A@X_hat-Y||2<=eps, eps="+str(eps)+", density="+str(density)+", measurement="+str(measure_num))
     plt.show()
 
 
@@ -109,7 +108,6 @@ def do_plot(s_min, s_max, A):
     # plt.show()
 
 
-simulate_cvxpy(sparsity=sparsity, A=A)
+simulate_cvxpy(density=density, A=A)
 # e2 = simulate_linprog(sparsity=0.05, A=A)
-
 
