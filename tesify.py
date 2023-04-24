@@ -6,9 +6,12 @@ import scipy.stats as stats
 import matplotlib.pyplot as plt
 
 
-# generate matrix A with full row rank
+# Basic setup
 measure_num = 50
-sparsity = 0.30
+sparsity = 0.35
+eps = 0.5
+rvs = stats.norm(loc=0, scale=1).rvs  # standard Gaussian
+# rvs = stats.laplace().rvs  # Laplace
 
 
 A = np.zeros((measure_num, 100))
@@ -17,12 +20,8 @@ for i in range(measure_num):
         A[i][j] = np.random.normal()
     np.random.shuffle(A[i])
 
-# specify probability distribution
-rvs = stats.norm(loc=0, scale=1).rvs  # standard Gaussian
-# rvs = stats.laplace().rvs  # Laplace
 
-
-def simulate_cvxpy(sparsity, A, eps=0.005):
+def simulate_cvxpy(sparsity, A, eps=eps):
     """Disciplined convex programming (DCP) to solve min or max problem"""
     # generate X from sparse function, and generate Y = A @ X
     S = sparse.random(100, 1, density=sparsity, data_rvs=rvs)
