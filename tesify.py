@@ -8,28 +8,28 @@ import matplotlib.pyplot as plt
 
 # Basic setup
 measure_num = 50
-feature_num = 100
-density = 0.05
-eps = 0.1
-rvs = stats.norm(loc=0, scale=1).rvs  # standard Gaussian
-# rvs = stats.laplace().rvs  # Laplace
+sparsity = 0.35
+eps = 0.5
+#rvs = stats.norm(loc=0, scale=1).rvs  # standard Gaussian
+rvs = stats.laplace().rvs  # Laplace
 
-A = np.zeros((measure_num, feature_num))
+
+A = np.zeros((measure_num, 100))
 for i in range(measure_num):
     for j in range(measure_num):
         A[i][j] = np.random.normal()
     np.random.shuffle(A[i])
 
 
-def simulate_cvxpy(density, A, eps=eps):
-    """Using Disciplined convex programming (DCP) to solve min or max problem"""
+def simulate_cvxpy(sparsity, A, eps=eps):
+    """Disciplined convex programming (DCP) to solve min or max problem"""
     # generate X from sparse function, and generate Y = A @ X
-    S = sparse.random(feature_num, 1, density=density, data_rvs=rvs)
+    S = sparse.random(100, 1, density=sparsity, data_rvs=rvs)
     X = S.toarray()
     Y = np.matmul(A, X)
 
-    X_hat1 = cp.Variable((feature_num, 1))
-    X_hat2 = cp.Variable((feature_num, 1))
+    X_hat1 = cp.Variable((100, 1))
+    X_hat2 = cp.Variable((100, 1))
 
     objective1 = cp.Minimize(cp.norm(X_hat1, 1))
     objective2 = cp.Minimize(cp.norm(X_hat2, 1))
@@ -40,24 +40,22 @@ def simulate_cvxpy(density, A, eps=eps):
     prob1 = cp.Problem(objective1, constraints1)
     prob2 = cp.Problem(objective2, constraints2)
 
+
     prob1.solve()
     prob2.solve()
 
-    # print(cp.norm((A @ X_hat1) - Y, 2).value)
-    # print(cp.norm((A @ X_hat2) - Y, 2).value)
+    print(cp.norm((A @ X_hat1) - Y, 2).value)
+    print(cp.norm((A @ X_hat2) - Y, 2).value)
 
     # calculating ||X_hat-X||
-    e1 = np.linalg.norm(X_hat1.value - X, 2)
-    e2 = np.linalg.norm(X_hat2.value - X, 2)
-    print(e1, e2)
-
+    norm = np.linalg.norm(X_hat1.value - X, 2)
 
     plt.plot(X[:, 0])
     plt.plot(X_hat1.value)
     plt.ylabel("value of element in x or x_hat")
     plt.xlabel("sparse vector x and x_hat")
     plt.legend(["x", "x_hat"])
-    plt.title("A@X_hat=Y, eps="+str(eps)+", density="+str(density)+", measurement="+str(measure_num))
+    plt.title("A@X_hat=Y, eps="+str(eps)+", sparsity="+str(sparsity)+", measurement="+str(measure_num))
     plt.show()
 
     plt.plot(X[:, 0])
@@ -65,8 +63,10 @@ def simulate_cvxpy(density, A, eps=eps):
     plt.ylabel("value of element in x or x_hat")
     plt.xlabel("sparse vector x and x_hat")
     plt.legend(["x", "x_hat"])
-    plt.title("||A@X_hat-Y||2<=eps, eps="+str(eps)+", density="+str(density)+", measurement="+str(measure_num))
+    plt.title("||A@X_hat-Y||2<=eps, eps="+str(eps)+", sparsity="+str(sparsity)+", measurement="+str(measure_num))
     plt.show()
+
+
 
 
 def simulate_linprog(sparsity, A):
@@ -108,6 +108,7 @@ def do_plot(s_min, s_max, A):
     # plt.show()
 
 
-simulate_cvxpy(density=density, A=A)
+simulate_cvxpy(sparsity=sparsity, A=A)
 # e2 = simulate_linprog(sparsity=0.05, A=A)
+
 
