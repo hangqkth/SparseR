@@ -42,6 +42,9 @@ def simulate_cvxpy(density, A, eps=eps):
 
     constraints1 = [A @ X_hat1 == Y]
     constraints2 = [cp.sum(cp.square(A @ X_hat2 - Y)) <= eps**2]
+    print(A.shape)
+    print(X_hat2.shape)
+    print(Y.shape)
 
     prob1 = cp.Problem(objective1, constraints1)
     prob2 = cp.Problem(objective2, constraints2)
@@ -56,7 +59,6 @@ def simulate_cvxpy(density, A, eps=eps):
     e1 = np.linalg.norm(X_hat1.value - X, 2)
     e2 = np.linalg.norm(X_hat2.value - X, 2)
     print(e1, '\n', e2)
-
 
     plt.plot(X[:, 0])
     plt.plot(X_hat1.value)

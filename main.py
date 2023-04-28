@@ -40,4 +40,4 @@ def main(dataset):
         print("Invalid dataset, input 'image' or 'wine'.")
 
 
-main("image")  # input "image" for "wine"
+main("wine")  # input "image" for "wine"

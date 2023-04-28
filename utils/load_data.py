@@ -22,11 +22,11 @@ def load_data_into_npy(data_source):
             img = img[(max_high-200)//2:-(max_high-200)//2, (max_length-200)//2:-(max_length-200)//2, :]
             img = cv2.copyMakeBorder(img, 200-img.shape[0], 0, 200-img.shape[1], 0, cv2.BORDER_REFLECT)  # fixed size 200
             # img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-            # blocks = [img[:100, :100, :], img[100:, 100:, :], img[:100, 100:, :], img[100:, :100, :]]
-            blocks = [img[:50, :50, :], img[:50, 50:100, :], img[:50, 100:150, :], img[:50, 150:, :],
-                      img[50:100, :50, :], img[50:100, 50:100, :], img[50:100, 100:150, :], img[50:100, 150:, :],
-                      img[100:150, :50, :], img[100:150, 50:100, :], img[100:150, 100:150, :], img[100:150, 150:, :],
-                      img[150:, :50, :], img[150:, 50:100, :], img[150:, 100:150, :], img[150:, 150:, :]]
+            blocks = [img[:100, :100, :], img[100:, 100:, :], img[:100, 100:, :], img[100:, :100, :]]
+            # blocks = [img[:50, :50, :], img[:50, 50:100, :], img[:50, 100:150, :], img[:50, 150:, :],
+            #           img[50:100, :50, :], img[50:100, 50:100, :], img[50:100, 100:150, :], img[50:100, 150:, :],
+            #           img[100:150, :50, :], img[100:150, 50:100, :], img[100:150, 100:150, :], img[100:150, 150:, :],
+            #           img[150:, :50, :], img[150:, 50:100, :], img[150:, 100:150, :], img[150:, 150:, :]]
             blocks = [cv2.pyrDown(cv2.pyrDown(cv2.pyrDown(block))) for block in blocks]
             blocks = [block.ravel()/np.linalg.norm(block.ravel(), 2) for block in blocks]
             # blocks = [block.ravel() for block in blocks]

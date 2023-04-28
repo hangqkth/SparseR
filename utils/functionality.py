@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from random import choice
 from scipy.optimize import linprog
+import cvxpy as cp
 
 
 def get_sparse_representation(A_con, c, bounds, test_sample, eps, iteration):
@@ -13,6 +14,27 @@ def get_sparse_representation(A_con, c, bounds, test_sample, eps, iteration):
     res = linprog(c=c, A_ub=A_con, b_ub=y_con, bounds=bounds, method='highs')
     sparse_x = res.x
     if res.status == 0 and iteration == 0:
+        plt.plot(sparse_x)
+        plt.show()
+        plt.title("example of sparse representation")
+    print(sparse_x.shape)
+    return sparse_x
+
+
+def get_sparse_representation_cp(A, test_sample, eps, iteration):
+    """ Solve the optimization problem to obtain sparse representation:
+        minimize ||x||1
+        subject to ||Ax-Y||2<=eps """
+    X = cp.Variable((A.shape[1], 1))
+    Y = np.expand_dims(test_sample, axis=1)
+
+    constraints = [cp.sum(cp.square(A @ X - Y)) <= eps ** 2]
+    objective = cp.Minimize(cp.norm(X, 1))
+    problem = cp.Problem(objective, constraints)
+    problem.solve()
+    # print(type(problem.status))
+    sparse_x = X.value[:, 0] if problem.status == "optimal" else None
+    if iteration == 0 and problem.status == "optimal":
         plt.plot(sparse_x)
         plt.show()
         plt.title("example of sparse representation")
@@ -58,7 +80,8 @@ def classification(train_set, test_set, eps):
     for role in range(len(test_set)):
         print("testing class "+str(role))
         for i in range(test_set[role].shape[0]):
-            sparse_x = get_sparse_representation(A_con, c, bounds, test_set[role][i, :], eps, i)
+            # sparse_x = get_sparse_representation(A_con, c, bounds, test_set[role][i, :], eps, i)
+            sparse_x = get_sparse_representation_cp(A, test_set[role][i, :], eps, i)
             if sparse_x is not None:
                 decision = src_decision(A, train_sample_per_class, list(sparse_x), class_num, test_set[role][i, :])
             else:
@@ -89,7 +112,8 @@ def block_wise_classification(train_set, test_set, eps):
         for i in range(test_set[role].shape[0]):
             decisions = []
             for block in range(test_set[role].shape[1]):
-                sparse_x = get_sparse_representation(A_con, c, bounds, test_set[role][i, block, :], eps, i)
+                # sparse_x = get_sparse_representation(A_con, c, bounds, test_set[role][i, block, :], eps, i)
+                sparse_x = get_sparse_representation_cp(A, test_set[role][i, block, :], eps, i)
                 if sparse_x is not None:
                     decisions.append(src_decision(A, train_sample_per_class, list(sparse_x), class_num, test_set[role][i, block, :]))
                 else:
@@ -123,5 +147,5 @@ if __name__ == "__main__":
     test_set = data_array[:, 15:, :]
     train_block_set = block_array[:, :15, :, :]
     test_block_set = block_array[:, 15:, :, :]
-    classification(train_set, test_set, eps=0.048)
-    # block_wise_classification(train_block_set, test_block_set, eps=0.048)
+    # classification(train_set, test_set, eps=0.2)
+    block_wise_classification(train_block_set, test_block_set, eps=0.2)
