@@ -139,6 +139,7 @@ def visualize_wine_feature(data_with_classes, axis1, axis2):
 if __name__ == "__main__":
     data_array = np.load('../matrix_data/data_array.npy')
     block_array = np.load('../matrix_data/block_array.npy')
+    print(data_array.shape)
     #  reduce to 3 classes: Darth Vader, Green Goblin, Thanos
     data_array = np.concatenate([data_array[:2, ], np.expand_dims(data_array[3, :, :], axis=0)], axis=0)
     block_array = np.concatenate([block_array[:2, ], np.expand_dims(block_array[3, :, :, :], axis=0)], axis=0)
@@ -147,5 +148,5 @@ if __name__ == "__main__":
     test_set = data_array[:, 15:, :]
     train_block_set = block_array[:, :15, :, :]
     test_block_set = block_array[:, 15:, :, :]
-    # classification(train_set, test_set, eps=0.2)
-    block_wise_classification(train_block_set, test_block_set, eps=0.2)
+    classification(train_set, test_set, eps=0.2)
+    # block_wise_classification(train_block_set, test_block_set, eps=0.2)
